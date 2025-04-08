@@ -9,9 +9,9 @@ const app = express();
 
 // CORS - Set this BEFORE routes and cookies
 //app.use(cors({
-    origin: 'http://localhost:3000',  
-    credentials: true,                
-}));
+//    origin: 'http://localhost:3000',  
+//    credentials: true,                
+// }));
 
 app.use(cors({
   origin: "*", // or better: ['https://your-frontend.netlify.app']
