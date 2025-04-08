@@ -87,7 +87,7 @@ export const requestPasswordReset = handleAsyncError(async (req, res, next) => {
         const resetToken = user.generatePasswordResetToken();
         await user.save({ validateBeforeSave: false });
 
-        const resetPasswordUrl = `https://apeksha-classes.netlify.app/api/v1/reset/${resetToken}`;
+        const resetPasswordUrl = `https://apeksha-classes.netlify.app/reset/${resetToken}`;
         // `http://localhost:3000/reset/${resetToken}`;
         const message = `Your password reset token is as follows:\n\n ${resetPasswordUrl} \n\nIf you have not requested this email, please ignore it.`;
 
