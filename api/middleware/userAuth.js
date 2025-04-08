@@ -1,6 +1,7 @@
 import handleAsyncError from "../middleware/handleAsyncError.js";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/UserModels.js";
+import HandleError from "../utils/handleError.js";
 
 // Verify user authentication
 export const verifyUserAuth = handleAsyncError(async (req, res, next) => {

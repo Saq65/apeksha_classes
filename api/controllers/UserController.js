@@ -1,5 +1,5 @@
 import handleAsyncError from "../middleware/handleAsyncError.js";
-import HandleError from "../utils/handleError.js"; // Adjust this path as needed
+import HandleError from "../utils/handleError.js"; 
 import User from "../models/UserModels.js";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
@@ -141,12 +141,13 @@ export const resetPassword = handleAsyncError(async (req, res, next) => {
 
 // Get user details
 export const getUserDetails = handleAsyncError(async (req, res, next) => {
-    const user = await User.findById(req.user.id);
+    console.log(" Authenticated user:", req.user);
     res.status(200).json({
         success: true,
-        user,
+        user: req.user,
     });
 });
+
 
 // Update user password
 export const updatePassword = handleAsyncError(async (req, res, next) => {

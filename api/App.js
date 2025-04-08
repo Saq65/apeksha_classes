@@ -1,23 +1,27 @@
 import express from "express";
-import errorHandleMiddleware from "../api/middleware/error.js"
+import errorHandleMiddleware from "../api/middleware/error.js";
 import cookieParser from "cookie-parser";
 import userroutes from "./routes/UserRoutes.js";
 import cors from "cors";
-
+import inquiryRoutes from "./routes/InquiryRoutes.js";
 
 const app = express();
 
-// Middleware
-app.use(express.json());
+// CORS - Set this BEFORE routes and cookies
+app.use(cors({
+    origin: 'http://localhost:3000',  
+    credentials: true,                
+}));
+
+// Parse cookies and JSON
 app.use(cookieParser());
+app.use(express.json({ limit: '10mb' }));
 
-// CORS
-app.use(cors({ origin: '*' })); // Allow all origins, adjust if needed
-app.use(express.json({ limit: '10mb' }));  // Use
-
-// Route
+// Routes
 app.use('/api/v1', userroutes);
+app.use("/api/v1", inquiryRoutes);
 
-app.use(errorHandleMiddleware)
+// Error handler
+app.use(errorHandleMiddleware);
 
 export default app;
