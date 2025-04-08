@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         required: [true, "please enter your password"],
         select: false
     },
+    mobile: {
+        type: String,
+        required: [true, "please enter your mobile number"],
+    },
     avatar: {
         public_id: {
             type: String,
@@ -75,7 +79,7 @@ userSchema.methods.generatePasswordResetToken = function () {
 
     // set token expire time
     this.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 min
- 
+
     return resetToken;
 }
 

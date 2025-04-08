@@ -1,47 +1,70 @@
 import handleAsyncError from "../middleware/handleAsyncError.js";
-import UserModel from "../models/UserModels.js";
-import HandleError from "../utils/handleError.js";
+import User from "../models/UserModels.js";
+import HandleError from "../middleware/handleAsyncError.js";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 
 // register user
-export const registerUser = handleAsyncError(
-    async (req, res, next) => {
-        const { name, password, email } = req.body;
+export const registerUser = handleAsyncError(async (req, res) => {
+    try {
+        const { name, email, password, mobile, avatar } = req.body;
+
         const user = await User.create({
             name,
             email,
             password,
-            avatar: {
-                public_id: "this is temp id",
-                url: "this is temp url"
-            }
-        })
-        sendToken(user, 201, res);
+            mobile,
+            avatar,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            user,
+        });
+
+    } catch (error) {
+        // Handle MongoDB duplicate key error
+        if (error.code === 11000 && error.keyPattern?.email) {
+            return res.status(400).json({
+                success: false,
+                message: "Your account already exists. Please log in.",
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-)
+}
+);
+
+
 
 // login user
-
 export const loginUser = handleAsyncError(async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return next(new HandleError("email or password cannot be empty", 400))
+        return next(new HandleError("Email or password cannot be empty", 400));
     }
 
     const user = await User.findOne({ email }).select("+password");
+
     if (!user) {
-        return next(new HandleError("invalid email or password", 400))
+        return next(new HandleError("Your account doesn't exist. Please sign up.", 404));
     }
+
     const isPasswordValid = await user.verifyPassword(password);
     if (!isPasswordValid) {
-        return next(new HandleError("invalid email or password", 400))
+        return next(new HandleError("Invalid email or password", 401));
     }
-    sendToken(user, 200, res);
 
-})
+    sendToken(user, 200, res);
+});
+
 
 // logout user
 export const logoutUser = handleAsyncError(async (req, res, next) => {
