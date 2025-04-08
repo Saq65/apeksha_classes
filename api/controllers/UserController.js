@@ -1,5 +1,5 @@
 import handleAsyncError from "../middleware/handleAsyncError.js";
-import HandleError from "../utils/handleError.js";
+import HandleError from "../utils/handleError.js"; 
 import User from "../models/UserModels.js";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
@@ -87,7 +87,7 @@ export const requestPasswordReset = handleAsyncError(async (req, res, next) => {
         const resetToken = user.generatePasswordResetToken();
         await user.save({ validateBeforeSave: false });
 
-        const resetPasswordUrl = `https://apeksha-classes.netlify.app/reset/${resetToken}`;
+        const resetPasswordUrl = `https://apeksha-classes-orai.netlify.app/reset/${resetToken}`;
         // `http://localhost:3000/reset/${resetToken}`;
         const message = `Your password reset token is as follows:\n\n ${resetPasswordUrl} \n\nIf you have not requested this email, please ignore it.`;
 
