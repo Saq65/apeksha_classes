@@ -8,9 +8,15 @@ import inquiryRoutes from "./routes/InquiryRoutes.js";
 const app = express();
 
 // CORS - Set this BEFORE routes and cookies
-app.use(cors({
+//app.use(cors({
     origin: 'http://localhost:3000',  
     credentials: true,                
+}));
+
+app.use(cors({
+  origin: "*", // or better: ['https://your-frontend.netlify.app']
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
 
 // Parse cookies and JSON
