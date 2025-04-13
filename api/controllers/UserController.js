@@ -205,39 +205,30 @@ export const confirmVerificationCode = async (req, res) => {
 // Update user password
 export const updatePassword = async (req, res) => {
     try {
-      const { oldPassword, newPassword, confirmPassword, verificationCode } = req.body;
-  
-      const user = await User.findById(req.user._id).select("+password");
-  
-      if (!user) return res.status(404).json({ message: "User not found" });
-  
-      if (
-        !user.verificationCode ||
-        user.verificationCode !== verificationCode ||
-        user.verificationCodeExpire < Date.now()
-      ) {
-        return res.status(400).json({ message: "Invalid or expired verification code" });
-      }
-  
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Old password is incorrect" });
-      }
-  
-      if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: "Passwords do not match" });
-      }
-  
-      user.password = newPassword;
-      user.verificationCode = undefined;
-      user.verificationCodeExpire = undefined;
-      await user.save({ validateBeforeSave: false });
-  
-      res.status(200).json({ message: "Password updated successfully" });
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+
+        const user = await User.findById(req.user._id).select("+password");
+
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Old password is incorrect" });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        user.password = newPassword;
+        await user.save({ validateBeforeSave: false });
+
+        res.status(200).json({ message: "Password updated successfully" });
     } catch (error) {
-      res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error" });
     }
-  };
+};
+
   
   
 
