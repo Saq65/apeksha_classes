@@ -4,20 +4,20 @@ import UserModel from "../models/UserModels.js";
 import HandleError from "../utils/handleError.js";
 
 // Verify user authentication
-export const verifyUserAuth = handleAsyncError(async (req, res, next) => {
-    const { token } = req.cookies;  
+// export const verifyUserAuth = handleAsyncError(async (req, res, next) => {
+//     const { token } = req.cookies;  
 
 
-    if (!token) {
-        return next(new HandleError("Authentication is missing please login to access this resource", 400));
-    }
+//     if (!token) {
+//         return next(new HandleError("Authentication is missing please login to access this resource", 400));
+//     }
 
-    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await UserModel.findById(decodedData.id);
-    next();
-});
+//     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = await UserModel.findById(decodedData.id);
+//     next();
+// });
 
-export const protect = async (req, res, next) => {
+export const verifyUserAuth = async (req, res, next) => {
     let token;
     if (
       req.headers.authorization &&
