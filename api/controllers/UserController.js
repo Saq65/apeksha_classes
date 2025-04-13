@@ -4,6 +4,7 @@ import User from "../models/UserModels.js";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 
 // Register user
 export const registerUser = handleAsyncError(async (req, res) => {
@@ -151,24 +152,36 @@ export const getUserDetails = handleAsyncError(async (req, res, next) => {
 
 
 // Update user password
-export const updatePassword = handleAsyncError(async (req, res, next) => {
-    const user = await User.findById(req.user.id).select("+password");
-    const { oldPassword, newPassword, confirmPassword } = req.body;
 
-    const checkPasswordMatch = await user.verifyPassword(oldPassword);
-    if (!checkPasswordMatch) {
-        return next(new HandleError("Old password is incorrect", 400));
+export const updatePassword = async (req, res) => {
+    try {
+      const { oldPassword, newPassword, confirmPassword } = req.body;
+  
+      const user = await User.findById(req.user._id).select("+password");
+  
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Old password is incorrect" });
+      }
+  
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: "Passwords do not match" });
+      }
+  
+      user.password = newPassword;
+  
+      await user.save({ validateBeforeSave: false });
+  
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
     }
+  };
+  
 
-    if (newPassword !== confirmPassword) {
-        return next(new HandleError("New password and confirm password do not match", 400));
-    }
 
-    user.password = newPassword;
-    await user.save();
-
-    sendToken(user, 200, res);
-});
 
 // Update profile
 export const updateProfile = handleAsyncError(async (req, res, next) => {
