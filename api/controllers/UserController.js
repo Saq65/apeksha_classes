@@ -136,7 +136,7 @@ export const resetPassword = handleAsyncError(async (req, res, next) => {
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
     sendToken(user, 200, res);
 });

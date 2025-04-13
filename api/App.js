@@ -14,6 +14,7 @@ const app = express();
 
 app.use(cors({
   origin: [
+   
     "http://localhost:3000",
     "https://apeksha-classes-orai.netlify.app",
   ],
