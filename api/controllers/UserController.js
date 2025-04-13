@@ -152,7 +152,6 @@ export const getUserDetails = handleAsyncError(async (req, res, next) => {
 
 
 // Update user password
-
 export const updatePassword = async (req, res) => {
     try {
       const { oldPassword, newPassword, confirmPassword } = req.body;
