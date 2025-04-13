@@ -1,5 +1,5 @@
 import handleAsyncError from "../middleware/handleAsyncError.js";
-import HandleError from "../utils/handleError.js"; 
+import HandleError from "../utils/handleError.js";
 import User from "../models/UserModels.js";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
@@ -150,15 +150,74 @@ export const getUserDetails = handleAsyncError(async (req, res, next) => {
     });
 });
 
+// Send code to confirm user before update
+export const sendVerificationCode = handleAsyncError(async (req, res, next) => {
+    const user = await User.findById(req.user._id);
+    if (!user) return next(new HandleError("User not found", 404));
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.verificationCode = verificationCode;
+    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000; // valid for 10 mins
+    await user.save({ validateBeforeSave: false });
+
+    const message = `Your verification code is: ${verificationCode}`;
+
+    await sendEmail({
+        email: user.email,
+        subject: "Email Verification Code",
+        message,
+    });
+
+    res.status(200).json({
+        success: true,
+        message: `Verification code sent to ${user.email}`,
+    });
+});
+
+// confirmverification
+export const confirmVerificationCode = async (req, res) => {
+    try {
+        const { verificationCode } = req.body;
+
+        const user = await User.findById(req.user._id);
+
+        if (
+            !user ||
+            user.verificationCode !== verificationCode ||
+            user.verificationCodeExpire < Date.now()
+        ) {
+            return res.status(400).json({ message: "Invalid or expired verification code" });
+        }
+
+        // Optionally: clear the code after successful verification
+        user.verificationCode = undefined;
+        user.verificationCodeExpire = undefined;
+
+        await user.save({ validateBeforeSave: false });
+
+        res.status(200).json({ message: "Verification successful" });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 // Update user password
 export const updatePassword = async (req, res) => {
     try {
-      const { oldPassword, newPassword, confirmPassword } = req.body;
+      const { oldPassword, newPassword, confirmPassword, verificationCode } = req.body;
   
       const user = await User.findById(req.user._id).select("+password");
   
       if (!user) return res.status(404).json({ message: "User not found" });
+  
+      if (
+        !user.verificationCode ||
+        user.verificationCode !== verificationCode ||
+        user.verificationCodeExpire < Date.now()
+      ) {
+        return res.status(400).json({ message: "Invalid or expired verification code" });
+      }
   
       const isMatch = await bcrypt.compare(oldPassword, user.password);
       if (!isMatch) {
@@ -170,7 +229,8 @@ export const updatePassword = async (req, res) => {
       }
   
       user.password = newPassword;
-  
+      user.verificationCode = undefined;
+      user.verificationCodeExpire = undefined;
       await user.save({ validateBeforeSave: false });
   
       res.status(200).json({ message: "Password updated successfully" });
@@ -179,29 +239,41 @@ export const updatePassword = async (req, res) => {
     }
   };
   
-
+  
 
 
 // Update profile
-export const updateProfile = handleAsyncError(async (req, res, next) => {
+export const updateProfile = async (req, res) => {
     const { name, email } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-        req.user.id,
-        { name, email },
-        {
-            new: true,
-            runValidators: true,
-            useFindAndModify: false,
-        }
-    );
-
-    res.status(200).json({
-        success: true,
-        message: "Profile updated successfully",
-        user,
+    const user = await User.findById(req.user.id);
+  
+    if (!user) return res.status(404).json({ message: "User not found" });
+  
+    // Update fields
+    user.name = name;
+    user.email = email;
+  
+    // Generate verification code
+    const code = crypto.randomInt(100000, 999999).toString();
+    user.verificationCode = code;
+    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000; // 10 min
+  
+    await user.save({ validateBeforeSave: false });
+  
+    await  sendEmail({
+      email: user.email,
+      subject: "Email Verification",
+      message: `Your verification code is: ${code}`,
     });
-});
+  
+    res.status(200).json({
+      success: true,
+      message: "Profile updated. Verification code sent to new email.",
+      user,
+    });
+  };
+
+
 
 // Admin - Get all users
 export const getAllUsers = handleAsyncError(async (req, res, next) => {

@@ -43,6 +43,9 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     },
+    verificationCode: String,
+    verificationCodeExpire: Date,
+
     role: {
         type: String,
         default: "User"

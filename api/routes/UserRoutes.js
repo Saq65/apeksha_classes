@@ -1,7 +1,10 @@
 import express from "express";
-import { deleteUser, getAllUsers, getSingleUser, getUserDetails, loginUser, logoutUser, registerUser, requestPasswordReset, resetPassword, updatePassword, updateProfile, updateUserRole } from "../controllers/UserController.js";
+import { confirmVerificationCode, deleteUser, getAllUsers, getSingleUser, getUserDetails, loginUser, logoutUser, registerUser, requestPasswordReset, resetPassword, sendVerificationCode, updatePassword, updateProfile, updateUserRole } from "../controllers/UserController.js";
 import { roleBasedAccess, verifyUserAuth } from "../middleware/userAuth.js";
 const router = express.Router();
+
+router.post('/verify/send-code', verifyUserAuth, sendVerificationCode);
+router.post('/verify-code', verifyUserAuth, confirmVerificationCode);
 
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
