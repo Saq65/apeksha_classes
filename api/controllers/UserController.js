@@ -229,10 +229,6 @@ export const updatePassword = async (req, res) => {
     }
 };
 
-  
-  
-
-
 // Update profile
 export const updateProfile = async (req, res) => {
     const { name, email } = req.body;

@@ -1,4 +1,3 @@
-// controllers/inquiryController.js
 import Inquiry from "../models/InquiryModel.js";
 import handleAsyncError from "../middleware/handleAsyncError.js";
 
@@ -23,3 +22,12 @@ export const submitInquiry = handleAsyncError(async (req, res, next) => {
         inquiry
     });
 });
+
+export const getInquirry = handleAsyncError(async (req, res, next) => {
+    try {
+        const getmsg = await Inquiry.find();
+        res.status(200).json(getmsg);
+    } catch (error) {
+        next(error);
+    }
+})
