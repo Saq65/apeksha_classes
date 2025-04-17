@@ -5,7 +5,7 @@ import userroutes from "./routes/UserRoutes.js";
 import cors from "cors";
 import inquiryRoutes from "./routes/InquiryRoutes.js";
 import { Server } from "socket.io";
-import http from "http";
+import http from "http"
 
 const app = express();
 
@@ -28,6 +28,12 @@ const io = new Server(server, {
   }
 });
 
+global.io = io;
+
+
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+});
 
 
 
