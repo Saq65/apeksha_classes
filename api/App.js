@@ -21,26 +21,23 @@ app.use(express.json());
 app.use("/api/v1", inquiryRoutes);
 app.use("/api/v1", userroutes);
 
-// ✅ Create server & socket.io instance
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: ['http://localhost:3000', 'https://apeksha-classes-orai.netlify.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,  // Allow credentials (cookies, etc.)
+  credentials: true,  
   }
 });
 
-// ✅ Make io available in route handlers
 app.set("io", io);
 
-// ✅ Log socket connections
 io.on("connection", (socket) => {
-  console.log("🔌 Socket connected:", socket.id);
+  console.log(" Socket connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("❌ Socket disconnected:", socket.id);
+    console.log(" Socket disconnected:", socket.id);
   });
 });
 
