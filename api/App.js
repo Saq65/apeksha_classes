@@ -25,15 +25,17 @@ app.use("/api/v1", userroutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://apeksha-classes.onrender.com', 
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-  },
+    origin: ['http://localhost:3000', 'https://apeksha-classes-orai.netlify.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,  // Allow credentials (cookies, etc.)
+  }
 });
 
+// ✅ Make io available in route handlers
 app.set("io", io);
 
+// ✅ Log socket connections
 io.on("connection", (socket) => {
   console.log("🔌 Socket connected:", socket.id);
 
