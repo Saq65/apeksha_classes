@@ -1,5 +1,4 @@
 
-import { io } from "../App.js";
 import Inquiry from "../models/InquiryModel.js";
 import handleAsyncError from "../middleware/handleAsyncError.js";
 
