@@ -16,17 +16,13 @@ export const submitInquiry = handleAsyncError(async (req, res, next) => {
         message,
     });
 
-    // ✅ Emit real-time event to frontend
-    if (global.io) {
-        global.io.emit("newMessage", inquiry);
-    }
-
     res.status(200).json({
         success: true,
         message: "Inquiry submitted successfully",
         inquiry
     });
 });
+
 
 export const getInquirry = handleAsyncError(async (req, res, next) => {
     const getmsg = await Inquiry.find();

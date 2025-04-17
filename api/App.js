@@ -36,6 +36,14 @@ io.on("connection", (socket) => {
 });
 
 
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://apeksha-classes-orai.netlify.app"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
 
 
 // Parse cookies and JSON
