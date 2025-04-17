@@ -1,58 +1,45 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
 import cors from "cors";
-import userroutes from "./routes/UserRoutes.js";
-import inquiryRoutes from "./routes/InquiryRoutes.js";
-import errorHandleMiddleware from "../api/middleware/error.js";
+import dotenv from "dotenv";
+import userroutes from './routes/UserRoutes.js';
+import inquiryRoutes from './routes/InquiryRoutes.js';
+
+dotenv.config();
 
 const app = express();
-const server = http.createServer(app); 
-
-
-// Middleware
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://apeksha-classes-orai.netlify.app",
-  ],
-  credentials: true,
+  origin: ["https://apeksha-classes-orai.netlify.app", "http://localhost:3000"],
+  credentials: true
 }));
-app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json());
 
-// Routes
-app.use("/api/v1", userroutes);
 app.use("/api/v1", inquiryRoutes);
+app.use("/api/v1", userroutes);
 
-
-
-// ✅ Setup Socket.io
+// ✅ Create server & socket.io instance
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://apeksha-classes-orai.netlify.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  },
+    origin: ["https://apeksha-classes-orai.netlify.app", "http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
 
-app.set("io", io); // Pass io to controllers
+// ✅ Make io available in route handlers
+app.set("io", io);
 
+// ✅ Log socket connections
 io.on("connection", (socket) => {
-  console.log("🧩 New client connected:", socket.id);
+  console.log("🔌 Socket connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("🔌 Client disconnected:", socket.id);
+    console.log("❌ Socket disconnected:", socket.id);
   });
 });
 
-// Error middleware
-app.use(errorHandleMiddleware);
-
-export { server }; 
 
 export default app;
