@@ -1,6 +1,5 @@
 import Inquiry from "../models/InquiryModel.js";
 import handleAsyncError from "../middleware/handleAsyncError.js";
-import { io } from "../App.js"; 
 
 export const submitInquiry = handleAsyncError(async (req, res, next) => {
     const { name, email, contact, studentClass, message } = req.body;
@@ -17,7 +16,8 @@ export const submitInquiry = handleAsyncError(async (req, res, next) => {
         message,
     });
 
-    io.emit("newMessage", inquiry);
+    // Emit the "newMessage" event to all connected clients
+    req.app.get('io').emit("newMessage", inquiry); // req.app.get('io') gives access to the socket.io instance
 
     res.status(200).json({
         success: true,
@@ -26,12 +26,11 @@ export const submitInquiry = handleAsyncError(async (req, res, next) => {
     });
 });
 
-
-    export const getInquirry = handleAsyncError(async (req, res, next) => {
-        try {
-            const getmsg = await Inquiry.find();
-            res.status(200).json(getmsg);
-        } catch (error) {
-            next(error);
-        }
-    })
+export const getInquirry = handleAsyncError(async (req, res, next) => {
+    try {
+        const getmsg = await Inquiry.find();
+        res.status(200).json(getmsg);
+    } catch (error) {
+        next(error);
+    }
+});

@@ -1,28 +1,27 @@
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";  // Correctly import 'Server' from socket.io
 import errorHandleMiddleware from "../api/middleware/error.js";
 import cookieParser from "cookie-parser";
 import userroutes from "./routes/UserRoutes.js";
 import cors from "cors";
 import inquiryRoutes from "./routes/InquiryRoutes.js";
-import http from "http"; // For creating the server
-import { Server } from "socket.io"; // Correct import for socket.io
 
 const app = express();
+
+// Create an HTTP server
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://apeksha-classes-orai.netlify.app",
-    ],
-    credentials: true,
-    methods: ["GET", "POST"]
-  }
-});
+// Initialize Socket.io with the server
+const io = new Server(server);  // Create an instance of Server using the http server
 
-// Emitting new message event
-global.io = io;
+// Set up the socket.io connection
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 
 app.use(cors({
   origin: [
@@ -30,24 +29,22 @@ app.use(cors({
     "https://apeksha-classes-orai.netlify.app",
   ],
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"]
 }));
 
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 
+// Routes
 app.use('/api/v1', userroutes);
 app.use("/api/v1", inquiryRoutes);
 
 // Error handler
 app.use(errorHandleMiddleware);
 
-export default app;
-
-// ✅ Export io to be used in other files
-export { io };
-
-// ✅ Run the server
+// Start the server
 server.listen(8000, () => {
-  console.log("Server running on http://localhost:8000");
+  console.log("Server running on port 8000");
 });
+
+export default app;
