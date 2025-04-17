@@ -8,7 +8,7 @@ import inquiryRoutes from "./routes/InquiryRoutes.js";
 import errorHandleMiddleware from "../api/middleware/error.js";
 
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app); 
 
 // ✅ Setup Socket.io
 const io = new Server(server, {
@@ -22,12 +22,14 @@ const io = new Server(server, {
   },
 });
 
-// ✅ Attach io instance to app so it can be accessed in controllers
-app.set("io", io);
+app.set("io", io); // Pass io to controllers
 
-// Optional: log socket connection
 io.on("connection", (socket) => {
-  console.log("Socket connected:", socket.id);
+  console.log("🧩 New client connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("🔌 Client disconnected:", socket.id);
+  });
 });
 
 // Middleware
