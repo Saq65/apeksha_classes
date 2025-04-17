@@ -11,8 +11,10 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: "*",
-  credentials: true
+  origin: ["https://apeksha-classes-orai.netlify.app", "http://localhost:3000"],
+  credentials: true,
+  allowedHeaders: ['Content-Type'],
+
 }));
 app.use(express.json());
 
@@ -23,16 +25,15 @@ app.use("/api/v1", userroutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://apeksha-classes-orai.netlify.app", "http://localhost:3000"],
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+    origin: 'https://apeksha-classes.onrender.com', 
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  },
 });
 
-// ✅ Make io available in route handlers
 app.set("io", io);
 
-// ✅ Log socket connections
 io.on("connection", (socket) => {
   console.log("🔌 Socket connected:", socket.id);
 
