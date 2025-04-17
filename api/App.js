@@ -10,6 +10,24 @@ import errorHandleMiddleware from "../api/middleware/error.js";
 const app = express();
 const server = http.createServer(app); 
 
+
+// Middleware
+// app.use(cors({
+//   origin: [
+//     "http://localhost:3000",
+//     "https://apeksha-classes-orai.netlify.app",
+//   ],
+//   credentials: true,
+// }));
+app.use(cookieParser());
+app.use(express.json({ limit: "10mb" }));
+
+// Routes
+app.use("/api/v1", userroutes);
+app.use("/api/v1", inquiryRoutes);
+
+
+
 // ✅ Setup Socket.io
 const io = new Server(server, {
   cors: {
@@ -31,21 +49,6 @@ io.on("connection", (socket) => {
     console.log("🔌 Client disconnected:", socket.id);
   });
 });
-
-// Middleware
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://apeksha-classes-orai.netlify.app",
-  ],
-  credentials: true,
-}));
-app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
-
-// Routes
-app.use("/api/v1", userroutes);
-app.use("/api/v1", inquiryRoutes);
 
 // Error middleware
 app.use(errorHandleMiddleware);
