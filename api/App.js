@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import userroutes from "./routes/UserRoutes.js";
 import cors from "cors";
 import inquiryRoutes from "./routes/InquiryRoutes.js";
+import { Server } from "socket.io";
+import http from "http";
 
 const app = express();
 
@@ -12,15 +14,20 @@ const app = express();
 //    credentials: true,                
 // }));
 
-app.use(cors({
-  origin: [
-   
-    "http://localhost:3000",
-    "https://apeksha-classes-orai.netlify.app",
-  ],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"]
-}));
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "https://apeksha-classes-orai.netlify.app"
+    ],
+    credentials: true,
+    methods: ["GET", "POST"]
+  }
+});
+
 
 
 
