@@ -11,7 +11,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: ["https://apeksha-classes-orai.netlify.app", "http://localhost:3000"],
+  origin: "*",
   credentials: true
 }));
 app.use(express.json());
