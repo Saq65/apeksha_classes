@@ -1,3 +1,5 @@
+
+import { io } from "../App.js";
 import Inquiry from "../models/InquiryModel.js";
 import handleAsyncError from "../middleware/handleAsyncError.js";
 
@@ -16,6 +18,8 @@ export const submitInquiry = handleAsyncError(async (req, res, next) => {
         message,
     });
 
+    io.emit("newMessage", inquiry);
+
     res.status(200).json({
         success: true,
         message: "Inquiry submitted successfully",
@@ -30,4 +34,4 @@ export const getInquirry = handleAsyncError(async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-})
+});
