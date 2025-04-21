@@ -24,7 +24,7 @@ app.use("/api/v1", userroutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:3000', 'https://apeksha-classes-orai.netlify.app'],
+    origin: ['http://localhost:3000', 'https://apekshaclasses452.netlify.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,  
