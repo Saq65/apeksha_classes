@@ -11,11 +11,15 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: ["https://apekshaclasses452.netlify.app", "http://localhost:3000"],
+  origin: [
+   
+    "http://localhost:3000",
+    "https://apekshaclasses452.netlify.app",
+  ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type'],
+  methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"]
 }));
+
 app.use(express.json());
 
 app.use("/api/v1", inquiryRoutes);

@@ -158,7 +158,7 @@ export const sendVerificationCode = handleAsyncError(async (req, res, next) => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     user.verificationCode = verificationCode;
-    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000; // valid for 10 mins
+    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000; 
     await user.save({ validateBeforeSave: false });
 
     const message = `Your verification code is: ${verificationCode}`;
