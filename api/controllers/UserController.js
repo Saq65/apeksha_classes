@@ -240,10 +240,9 @@ export const updateProfile = async (req, res) => {
     user.name = name;
     user.email = email;
   
-    // Generate verification code
     const code = crypto.randomInt(100000, 999999).toString();
     user.verificationCode = code;
-    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000; // 10 min
+    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000;
   
     await user.save({ validateBeforeSave: false });
   

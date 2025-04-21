@@ -13,8 +13,8 @@ const app = express();
 app.use(cors({
   origin: ["https://apekshaclasses452.netlify.app", "http://localhost:3000"],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
-
 }));
 app.use(express.json());
 
@@ -24,10 +24,10 @@ app.use("/api/v1", userroutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:3000', 'https://apekshaclasses452.netlify.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,  
+    origin: ["https://apekshaclasses452.netlify.app", "http://localhost:3000"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   }
 });
 
