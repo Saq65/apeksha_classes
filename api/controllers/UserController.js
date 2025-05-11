@@ -40,6 +40,25 @@ export const registerUser = handleAsyncError(async (req, res) => {
 });
 
 // Login user
+// export const loginUser = handleAsyncError(async (req, res, next) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return next(new HandleError("Email or password cannot be empty", 400));
+//     }
+
+//     const user = await User.findOne({ email }).select("+password");
+//     if (!user) {
+//         return next(new HandleError("Account doesn't exist", 404));
+//     }
+
+//     const isPasswordValid = await user.verifyPassword(password);
+//     if (!isPasswordValid) {
+//         return next(new HandleError("Invalid email or password", 400));
+//     }
+
+//     sendToken(user, 200, res);
+// });
 export const loginUser = handleAsyncError(async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -49,16 +68,17 @@ export const loginUser = handleAsyncError(async (req, res, next) => {
 
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-        return next(new HandleError("Account doesn't exist", 404));
+        return next(new HandleError("Invalid email", 404));
     }
 
     const isPasswordValid = await user.verifyPassword(password);
     if (!isPasswordValid) {
-        return next(new HandleError("Invalid email or password", 400));
+        return next(new HandleError("Wrong password", 401));
     }
 
     sendToken(user, 200, res);
 });
+
 
 // Logout user
 export const logoutUser = handleAsyncError(async (req, res, next) => {
