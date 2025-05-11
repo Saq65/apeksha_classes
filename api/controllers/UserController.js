@@ -73,8 +73,10 @@ export const loginUser = handleAsyncError(async (req, res, next) => {
 
     const isPasswordValid = await user.verifyPassword(password);
     if (!isPasswordValid) {
+        console.log("Password is incorrect");
         return next(new HandleError("Wrong password", 401));
     }
+
 
     sendToken(user, 200, res);
 });
@@ -178,7 +180,7 @@ export const sendVerificationCode = handleAsyncError(async (req, res, next) => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     user.verificationCode = verificationCode;
-    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000; 
+    user.verificationCodeExpire = Date.now() + 10 * 60 * 1000;
     await user.save({ validateBeforeSave: false });
 
     const message = `Your verification code is: ${verificationCode}`;
@@ -253,31 +255,31 @@ export const updatePassword = async (req, res) => {
 export const updateProfile = async (req, res) => {
     const { name, email } = req.body;
     const user = await User.findById(req.user.id);
-  
+
     if (!user) return res.status(404).json({ message: "User not found" });
-  
+
     // Update fields
     user.name = name;
     user.email = email;
-  
+
     const code = crypto.randomInt(100000, 999999).toString();
     user.verificationCode = code;
     user.verificationCodeExpire = Date.now() + 10 * 60 * 1000;
-  
+
     await user.save({ validateBeforeSave: false });
-  
-    await  sendEmail({
-      email: user.email,
-      subject: "Email Verification",
-      message: `Your verification code is: ${code}`,
+
+    await sendEmail({
+        email: user.email,
+        subject: "Email Verification",
+        message: `Your verification code is: ${code}`,
     });
-  
+
     res.status(200).json({
-      success: true,
-      message: "Profile updated. Verification code sent to new email.",
-      user,
+        success: true,
+        message: "Profile updated. Verification code sent to new email.",
+        user,
     });
-  };
+};
 
 
 
